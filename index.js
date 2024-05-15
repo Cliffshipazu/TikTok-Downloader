@@ -1,10 +1,6 @@
-/**
- * DannTeam
- * Instagram: @dannalwaysalone
- */
-
 const express = require("express");
 const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const { TiktokDownloader } = require("@tobyg74/tiktok-api-dl");
 
 // Library
@@ -12,7 +8,15 @@ const author = process.env.AUTHOR || "Cliff";
 const PORT = process.env.PORT || 8000;
 const app = express();
 
-app.use(helmet()); // Integrate Helmet for added security
+app.use(helmet());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100 
+});
+
+app.use(limiter);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
