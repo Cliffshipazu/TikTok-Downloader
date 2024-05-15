@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiktok Downloader</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-image: url("https://i.imgur.com/z28poj5.png");
+        background-repeat: repeat;
+        -webkit-animation: bg-scrolling-reverse 0.92s infinite;
+        -moz-animation: bg-scrolling-reverse 0.92s infinite;
+        -o-animation: bg-scrolling-reverse 0.92s infinite;
+        animation: bg-scrolling-reverse 0.92s infinite;
+        -webkit-animation-timing-function: linear;
+        -moz-animation-timing-function: linear;
+        -o-animation-timing-function: linear;
+        animation-timing-function: linear;
+          }
+
+         @-webkit-keyframes bg-scrolling-reverse {
+        100% {
+          background-position: 50px 50px;
+        }
+      }
+
+      @-moz-keyframes bg-scrolling-reverse {
+        100% {
+          background-position: 50px 50px;
+        }
+      }
+
+      @-o-keyframes bg-scrolling-reverse {
+        100% {
+          background-position: 50px 50px;
+        }
+      }
+
+      @keyframes bg-scrolling-reverse {
+        100% {
+          background-position: 50px 50px;
+        }
+      }
+
+      @-webkit-keyframes bg-scrolling {
+        0% {
+          background-position: 50px 50px;
+        }
+      }
+
+      @-moz-keyframes bg-scrolling {
+        0% {
+          background-position: 50px 50px;
+        }
+      }
+
+      @-o-keyframes bg-scrolling {
+        0% {
+          background-position: 50px 50px;
+        }
+      }
+
+      @keyframes bg-scrolling {
+        0% {
+          background-position: 50px 50px;
+        }
+         }
+    .loader {
+      border: 4px solid #B0C8E0;
+      border-radius: 50%;
+      border-top: 4px solid #B0C8E0;
+      width: 50px;
+      height: 50px;
+      -webkit-animation: spin 2s linear infinite; /* Safari */
+      animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .circle-avatar {
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+    }
+
+    .btn-effect:hover, .btn-effect:focus {
+      transform: scale(1.05);
+      background-image: transparent;
+    }
+
+    .input-effect:hover, .input-effect:focus {
+      border-color: #B0C8E0;
+    }
+    h1 {
+      background-image: transparent;
+    }
+  </style>
+</head>
+<body class="bg-gray-200 p-4">
+  <div class="max-w-lg mx-auto bg-gray-200 p-8 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold mb-4">Tiktok Downloader</h1>
+    <input type="text" id="urlInput" class="input-effect w-full border-2 rounded-md px-4 py-2 mb-4" placeholder="ENTER URL Tiktok">
+    <button id="downloadBtn" class="btn-effect bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <i class="fas fa-paper-plane mr-2"></i> Download
+    </button>
+    <div id="loader" class="hidden loader mx-auto my-8"></div>
+    <div id="result" class="hidden">
+      <img id="avatar" class="circle-avatar mx-auto mb-4" src="" alt="Avatar">
+      <p id="title" class="text-xl font-bold mb-2"></p>
+      <p id="username" class="text-lg mb-2"></p>
+      <p id="likeCount" class="mb-2"></p>
+      <p id="commentCount" class="mb-2"></p>
+      <video id="videoPlayer" class="w-full" controls></video>
+      <audio id="musicPlayer" class="w-full" controls></audio>
+      <a id="downloadLink" href="#" download><button class="btn-effect bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"><i class="fas fa-paper-plane mr-2"></i> Download</button></a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      document.getElementById('downloadBtn').addEventListener('click', function() {
+        const url = document.getElementById('urlInput').value;
+        if (!url) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Tiktok URL not filled in!'
+          });
+          return;
+        }
+        document.getElementById('loader').classList.remove('hidden');
+        axios.get('/api/tiktok?url=' + encodeURIComponent(url))
+          .then(function(response) {
+            const data = response.data.result;
+            document.getElementById('avatar').src = data.author.avatar;
+            document.getElementById('title').textContent = data.desc;
+            document.getElementById('username').textContent = data.author.nickname;
+            document.getElementById('likeCount').textContent = 'Likes: ' + data.statistics.likeCount;
+            document.getElementById('commentCount').textContent = 'Comments: ' + data.statistics.commentCount;
+            document.getElementById('videoPlayer').src = data.video;
+            document.getElementById('musicPlayer').src = data.music;
+            document.getElementById('downloadLink').href = data.video;
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('result').classList.remove('hidden');
+          })
+          .catch(function(error) {
+            console.error(error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'An error occurred while processing the request.'
+            });
+            document.getElementById('loader').classList.add('hidden');
+          });
+      });
+    </script>
+  </div>
+</body>
+</html>
