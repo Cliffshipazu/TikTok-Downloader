@@ -13,7 +13,7 @@ app.use(express.json());
 const author = process.env.AUTHOR || "Cliff";
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "public/index.html");
 });
 
 app.get("/api/tiktok", (req, res) => {
